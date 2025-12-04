@@ -14,6 +14,27 @@ app.use(cors({
   origin: FRONTEND_URL, // Allow configured frontend URL
   credentials: true,
 }));
+
+// Diagnostic environment summary (do not print secrets)
+console.log('🔧 Environment summary:', {
+  PORT: process.env.PORT || PORT,
+  FRONTEND_URL: FRONTEND_URL,
+  has_DATABASE_URL: !!process.env.DATABASE_URL,
+  has_DB_HOST: !!process.env.DB_HOST,
+});
+
+// Global error handlers to ensure errors appear in platform logs
+process.on('uncaughtException', (err) => {
+  console.error('🔥 Uncaught Exception:', err && err.stack ? err.stack : err);
+  // allow process to exit after logging
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('🔥 Unhandled Rejection:', reason);
+  // allow process to exit after logging
+  process.exit(1);
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
