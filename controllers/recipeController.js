@@ -88,16 +88,16 @@ export const createRecipe = async (req, res) => {
     }
 
     const newRecipe = await Recipe.create({
-      title,
-      description,
-      category,
-      ingredients: Array.isArray(ingredients) ? ingredients : JSON.parse(ingredients),
-      instructions,
-      image,
-      prepTime,
-      cookTime,
-      servings,
-      difficulty,
+      title: title || '',
+      description: description || '',
+      category: category || 'Umum',
+      ingredients: Array.isArray(ingredients) ? ingredients : (typeof ingredients === 'string' ? JSON.parse(ingredients) : []),
+      instructions: instructions || '',
+      image: image || '',
+      prepTime: prepTime ? parseInt(prepTime) : null,
+      cookTime: cookTime ? parseInt(cookTime) : null,
+      servings: servings ? parseInt(servings) : 1,
+      difficulty: difficulty && ['Mudah', 'Sedang', 'Sulit'].includes(difficulty) ? difficulty : 'Sedang',
       userId: req.userId,
     });
 
@@ -106,6 +106,8 @@ export const createRecipe = async (req, res) => {
       recipe: newRecipe,
     });
   } catch (error) {
+    console.error('Create recipe error:', error);
+      console.error('Request body:', req.body);
     res.status(500).json({ message: 'Error membuat resep', error: error.message });
   }
 };
